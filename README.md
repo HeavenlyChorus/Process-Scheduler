@@ -10,6 +10,6 @@ make
 
 # Acknowledgment
 
-I do not own these, actually my teammate did the most works.
-
-~~sry for spaghetti codes tho lol~~
+- My teammate did most works
+- RR policy can't run thru monitor(i.e do the exec part) well yet
+- ~~spaghetti codes strikes again~~
