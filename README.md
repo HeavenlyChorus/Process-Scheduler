@@ -8,8 +8,6 @@ make
 ./scheduler [filename] [policy]
 ```
 
-# Acknowledgment
+# Example
 
-- My teammate did most works
-- RR policy can't run thru monitor(i.e do the exec part) well yet
-- ~~spaghetti codes strikes again~~
+![1558011937102](C:\Users\HeavenlyChorus\AppData\Roaming\Typora\typora-user-images\1558011937102.png)
