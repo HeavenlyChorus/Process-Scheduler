@@ -34,6 +34,8 @@ char* foo(char* a){
 void terminated(int s) {
 	t = 1;
 }
+void Relay_SIGTSTP(int signo) {
+}
 
 int main(int argc, char* argv[]) {
 	int i = 1;
@@ -43,12 +45,14 @@ int main(int argc, char* argv[]) {
 	int e = 0;
 	int min = 0;
 	int time = 0;
+	int time2 = 0;
 	int working = 0;
 	int termed = 0;
 	char* filename;
 	char* policy;
 	char gantt[1025][10];
 	pid_t id;
+	signal(SIGTSTP, Relay_SIGTSTP);
 	
 	signal(SIGCHLD, terminated);
 	
@@ -285,16 +289,24 @@ int main(int argc, char* argv[]) {
 	if (strcmp(policy, "RR") == 0) {
 		printf("RR start\n");
 		while (1) {
+			for (k = 1; k <= jnum; k++) {
+				if (gantt[time][k] != '#')
+				gantt[time][k] = ' ';
+				if (jobs[k].term == 0 && jobs[k].ard == 1) {gantt[time][k] = '.';}
+				gantt[time][working] = '#';
+			}
+			sleep(1);
+			time+=1;
+			printf("time %d :\n", time);
 			if (e == 2 && working != 0) {
 				kill(jobs[working].id, SIGTSTP);
 				last = working;
 				working = 0;
 				e = 0;
 			}
-			//printf("time %d :\n", time);
 			for (k = 1; k <= jnum; k++) {//check if there is job arrived
 				if (time == jobs[k].arr && jobs[k].ard == 0) {
-					//printf("job %d arrived ", k);
+					//printf("job %d arrived \n", k);
 					jobs[k].ard = 1;
 					id = fork();
 					if (id > 0) {
@@ -303,7 +315,7 @@ int main(int argc, char* argv[]) {
 						kill(jobs[k].id, SIGTSTP);
 					}
 					else {
-						execvp("./monitor", jobs[j].argv);
+						execvp("./monitor", jobs[k].argv);
 					}
 				}
 			}
@@ -325,12 +337,12 @@ int main(int argc, char* argv[]) {
 					if (jobs[working].dur != -1) {
 						jobs[working].dur -= 1;
 						e += 1;
-						//printf("job %d is working, %d time remaining executed:%d ",working,jobs[working].dur,e);
+						//printf("job %d starts, %d time remaining executed:%d \n",working,jobs[working].dur,e);
 					}
 					if (jobs[working].dur == 0 || (t == 1 && jobs[working].dur == -1)) {
 						gantt[time][working] = '#';
 						kill(jobs[working].id, SIGTERM);
-						//printf("job %d finished ", working);
+						printf("job %d finished ", working);
 						jobs[working].term = 1;
 						last = working;
 						working = 0;
@@ -343,12 +355,12 @@ int main(int argc, char* argv[]) {
 				if (jobs[working].dur != -1) {
 					jobs[working].dur -= 1;
 					e += 1;
-					//printf("job %d is working, %d time remaining executed:%d ",working,jobs[working].dur,e);
+					//printf("job %d is working, %d time remaining executed:%d \n",working,jobs[working].dur,e);
 				}
 				if (jobs[working].dur == 0 || (t == 1 && jobs[working].dur == -1)) {
 					gantt[time][working] = '#';
 					kill(jobs[working].id, SIGTERM);
-					//printf("job %d finished ", working);
+					//printf("job %d finished \n", working);
 					jobs[working].term = 1;
 					last = working;
 					working = 0;
@@ -376,17 +388,9 @@ int main(int argc, char* argv[]) {
 				};
 				return 0;
 			}
-			for (k = 1; k <= jnum; k++) {
-				if (gantt[time][k] != '#')
-					gantt[time][k] = ' ';
-				if (jobs[k].term == 0 && jobs[k].ard == 1) {gantt[time][k] = '.';}
-				gantt[time][working] = '#';
-			}
 
-			time++;
-			//printf("\n");
-			sleep(1);
 		}
 	}
 	return 0;
 }
+
