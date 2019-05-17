@@ -288,6 +288,7 @@ int main(int argc, char* argv[]) {
 
 	if (strcmp(policy, "RR") == 0) {
 		printf("RR start\n");
+		time -=1;
 		while (1) {
 			for (k = 1; k <= jnum; k++) {
 				if (gantt[time][k] != '#')
@@ -306,7 +307,7 @@ int main(int argc, char* argv[]) {
 			}
 			for (k = 1; k <= jnum; k++) {//check if there is job arrived
 				if (time == jobs[k].arr && jobs[k].ard == 0) {
-					//printf("job %d arrived \n", k);
+					printf("job %d arrived \n", k);
 					jobs[k].ard = 1;
 					id = fork();
 					if (id > 0) {
@@ -337,7 +338,7 @@ int main(int argc, char* argv[]) {
 					if (jobs[working].dur != -1) {
 						jobs[working].dur -= 1;
 						e += 1;
-						//printf("job %d starts, %d time remaining executed:%d \n",working,jobs[working].dur,e);
+						printf("job %d starts, %d time remaining executed:%d \n",working,jobs[working].dur,e);
 					}
 					if (jobs[working].dur == 0 || (t == 1 && jobs[working].dur == -1)) {
 						gantt[time][working] = '#';
@@ -355,12 +356,12 @@ int main(int argc, char* argv[]) {
 				if (jobs[working].dur != -1) {
 					jobs[working].dur -= 1;
 					e += 1;
-					//printf("job %d is working, %d time remaining executed:%d \n",working,jobs[working].dur,e);
+					printf("job %d is working, %d time remaining executed:%d \n",working,jobs[working].dur,e);
 				}
 				if (jobs[working].dur == 0 || (t == 1 && jobs[working].dur == -1)) {
 					gantt[time][working] = '#';
 					kill(jobs[working].id, SIGTERM);
-					//printf("job %d finished \n", working);
+					printf("job %d finished \n", working);
 					jobs[working].term = 1;
 					last = working;
 					working = 0;
@@ -370,7 +371,7 @@ int main(int argc, char* argv[]) {
 				}
 			}
 			if (termed == jnum) {
-				//printf("all jobs are terminated in %d \n", time);
+				printf("all jobs are terminated in %d \n", time);
 				for (k = 1; k <= jnum; k++) {
 					if (gantt[time][k] != '#')
 						gantt[time][k] = ' ';
